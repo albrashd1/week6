@@ -1,6 +1,7 @@
 <?php
 include('config.php');
 include('pagination.php');
+include('generate_static_pages.php')
 ?>
 
 <!DOCTYPE html>
@@ -31,18 +32,24 @@ include('pagination.php');
     </form>
 
     <ul>
-        <?php
+        <?php 
         // Database query to retrieve news articles
         $query = "SELECT * FROM news ORDER BY publish_date DESC LIMIT $itemsPerPage OFFSET $offset";
         $result = $mysqli->query($query);
-
-        while ($row = $result->fetch_assoc()) :
+        
+        while ($row = $result->fetch_assoc()) : 
         ?>
             <li>
-                <h2><?php echo $row['title']; ?></h2>
-                <p><?php echo $row['content']; ?></p>
+                <h2><a href="static_pages/<?php echo generateStaticPageFilename($row['id'], $row['title']); ?>"><?php echo $row['title']; ?></a></h2>
+                <p><?php echo truncateText($row['content'], 50); ?></p>
                 <p><em>Published on: <?php echo $row['publish_date']; ?></em></p>
             </li>
+            
+            <?php
+            // After displaying the news article on the page, call generateStaticPage to create the static page
+            generateStaticPage($row['id'], $row['title'], $row['content'], $row['publish_date']);
+            ?>
+
         <?php endwhile; ?>
     </ul>
 
@@ -62,3 +69,4 @@ include('pagination.php');
     </div>
 </body>
 </html>
+
