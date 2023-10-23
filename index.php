@@ -14,6 +14,13 @@ include('generate_static_pages.php')
             document.getElementById("itemsPerPageForm").submit();
         }
     </script>
+
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+      tinymce.init({
+        selector: 'textarea'
+      });
+    </script>
 </head>
 <body>
     <h1>News Articles</h1>
@@ -31,6 +38,15 @@ include('generate_static_pages.php')
         </select>
     </form>
 
+    <form method="post" action="process_news.php">
+        <label for="news_title">News Title:</label>
+        <input type="text" name="news_title" id="news_title"><br><br>
+        <label for="news_content">News Content:</label>
+        <textarea name="news_content" id="news_content"></textarea><br><br>
+        <input type="submit" value="Submit News">
+    </form>
+
+
     <ul>
         <?php 
         // Database query to retrieve news articles
@@ -43,7 +59,12 @@ include('generate_static_pages.php')
                 <h2><a href="static_pages/<?php echo generateStaticPageFilename($row['id'], $row['title']); ?>"><?php echo $row['title']; ?></a></h2>
                 <p><?php echo truncateText($row['content'], 50); ?></p>
                 <p><em>Published on: <?php echo $row['publish_date']; ?></em></p>
+                <form method="get" action="process_news.php">
+                    <input type="hidden" name="news_id" value="<?php echo $row['id']; ?>">
+                    <button type="submit" id="editButton">Edit News Post </button>
+                </form>
             </li>
+            
             
             <?php
             // After displaying the news article on the page, call generateStaticPage to create the static page
